@@ -1,0 +1,11 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+{% block body %}
+    <div class="mx-auto max-w-3xl mb-36">
+        <div class="grid grid-cols-1 md:grid-cols-3 mx-4 gap-3">
+            {% for auction in auctions %}
+                {% include "auctions/_item_auction.html" %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

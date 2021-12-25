@@ -1,0 +1,139 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+{% block body %}
+
+<div class="container max-w-3xl mx-auto mb-36">
+    <div class="row mx-8" id="product">
+        <div class="img-product grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+            <img class="img-fluid rounded-3xl shadow mx-auto" src="{{auction.image.url}}" alt="connect" style="max-height:600px">
+            <div>
+                <p class="product-title font-bold text-4xl md:text-6xl">{{auction.title}}</p>
+                <p class="product-description">{{auction.description}}</p>
+
+                <p class="product product-description product-user ">@{{auction.user|title}}</p>
+                <p class="product product-description product-category"><a href="{% url 'category' category=auction.category.name %}">CATEGORY: {{auction.category}}</a></p>
+                
+
+                
+
+                <div class="acution-description bg-gray-600 rounded-xl p-4 text-center mx-auto mt-4">
+                    {% if auction.closed == False %}
+                        {% if auction.last_bid %}
+                            <p class="uppercase text-gray-50 font-medium">Current Bid:</p>
+                            <p id="lastBid" class="lastBid{{auction.id}} product-description product  text-white text-5xl font-bold" value="{{auction.last_bid.bid}}"> {{auction.last_bid.bid}} ETH</p>
+                        {% else %}
+                            <p id="initialBid" class="lastBid{{auction.id}} product-description product text-white text-5xl font-bold" value="{{auction.starting_bid}}">{{auction.starting_bid}} ETH</p>
+                        {% endif %}
+                    {% else %}
+                        <p id="initialBid" class="lastBid{{auction.id}} product-description product" value="{{auction.starting_bid}}">Close in: {{auction.starting_bid}}</p>
+                        {% if auction.last_bid.user.username == request.user.username %}
+                            <p class="product-description product">You win this listing</p>
+                        {% else %}
+                            <p class="product-description product">Sold to {{auction.last_bid.user.username|title}}</p>
+                        {% endif %}
+                    {% endif %}
+                    <p class="product product-description product-date text-white">{{auction.datepublished}}</p>
+                    
+                    {% if auction.user == request.user %}
+                        <div class="btn-right mt-4">
+                            <a class="btn btn-auction bg-red-300 text-red-600 border-none font-medium" href="{% url 'delete_auction' auction=auction.id %}">Delete</a> 
+                            {% if auction.closed == False %}
+                            <a class="btn btn-auction bg-blue-300 text-blue-600 border-none font-medium" href="{% url 'close_listing' auction=auction.id %}">Close listing</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <hr class="mt-6">
+    <div>
+
+    {% if request.user != auction.user %}
+        {% if auction.closed == False %}
+        <small class="product product-bid text-white"><span id="smallTotalBid">{{auction.bids.count}}</span> bid(s) so far. <span id="yourLastBid">{% if auction.last_bid.user == request.user %}Your bid is the current bid.{% endif %}</span></small>
+        <div class="row">
+            <form id="addNewBid" data-startingbid="{{auction.starting_bid}}" data-lastbid="{{auction.last_bid}}" data-auction="{{auction.id}}" action="{% url 'bid_to_auction' auction=auction.id %}">
+                {% csrf_token %}
+                <input type="number" name="totalBid" id="newBid" placeholder="Total bid" class="border rounded bg-gray-200 px-2 py-2">
+                <button class="bg-blue-200 text-blue-600 py-2 px-4 rounded mr-3" type="submit">Send</button>
+            </form>
+                {% if auction not in my_watchlist.auctions.all %}
+                    <form id="addWList" action="{% url 'add_to_watchlist' auction=auction.id %}" class="flex items-center">
+                        {% csrf_token %}
+                        <button id="button-auction" class="bg-white text py-2 px-4 rounded" type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark" viewBox="0 0 16 16">
+                                <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
+                            </svg>
+                        </button>
+                    </form>   
+                {% else %}
+                    <form id="addWList" action="{% url 'add_to_watchlist' auction=auction.id %}" class="flex items-center">
+                        {% csrf_token %}
+                        <button id="button-auction" class="bg-white text-red-700 shadow py-2 px-4 rounded added" type="submit"> 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-check-fill" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5zm8.854-9.646a.5.5 0 0 0-.708-.708L7.5 7.793 6.354 6.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/>
+                            </svg>
+                        </button>
+                    </form> 
+                {% endif %}
+        </div>
+        <p style="color: red;"><small id="message"></small></p>
+
+  <hr class="my-6">
+        {% endif %}
+    {% endif %}
+
+        <div class="btn-middle mb-4 mt-4">
+            <button type="button" class="btn btn-auction btn-send-comment bg-gray-200" data-toggle="modal" data-target="#create">Leave a comment</button>
+        </div>
+          
+          <!-- Modal -->
+          <div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content new-post-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Create comment</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <form method=post action="{% url 'add_comment' auction=auction.id %}">
+                        {% csrf_token %}
+                        <textarea rows="10" class="form-control" name="comment"></textarea>
+                        <br>
+                        <div class="modal-footer">
+                            <button class="btn btn-outline-dark save" type="submit" value="Create"><i class="fa fa-check-square-o"></i> Create</button>
+                        </div>
+                    </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        {% if comments %}
+        <div id="commentsList">
+            {% for comment in comments %}
+                <div id="comment{{comment.id}}" class="comment bg-gray-50 rounded-md mb-2 p-4">
+                    <small><strong>{{comment.user|title}}</strong></small>
+                    <p class="comment-cont">{{comment.comment}}</p>
+                    <div class="btn-right">
+                       <small style="margin-right: 4px;">{{comment.date}}</small>
+                    {% if request.user == comment.user %}
+                        <form id="deleteComment" data-comment='{{comment.id}}' action="{% url 'delete_comment' comment=comment.id %}" class="text-right">
+                            {% csrf_token %}
+                         
+                            <button class="btn btn-outline-dark bg-red-300 text-red-600 border-none font-medium" type="submit">Delete</button>
+                        </form>
+                    {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

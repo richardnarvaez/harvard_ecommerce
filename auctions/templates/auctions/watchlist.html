@@ -1,0 +1,22 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+{% block body %}
+
+<div>
+
+    {% if my_watchlist.auctions.all %}
+    <div class="container-fluid max-w-3xl">
+        <div class="row grid grid-cols-1 md:grid-cols-3 mx-4 gap-3">
+        {% for auction in my_watchlist.auctions.all %}
+         {% include "auctions/_item_auction.html" %}
+        {% endfor %}
+        </div>
+    </div>
+    {% else %}
+        <div class="empty text-center">
+            <p>Your watchlist is empty!</p>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

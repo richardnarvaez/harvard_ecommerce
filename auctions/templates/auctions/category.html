@@ -1,0 +1,21 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+{% block body %}
+
+<div>
+    {% if auctions %}
+    <div class="container-fluid mx-auto max-w-3xl ">
+        <div class="row grid grid-cols-1 grid-cols-3 gap-3 m-3">
+            {% for auction in auctions %}
+                {% include "auctions/_item_auction.html" %}
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+        <div class="empty text-center">
+            <p>This category doesn't have auctions.</p>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<div class="container max-w-xl mx-auto">
+    <div class="register">
+        <h2 class="title mb-4 text-center font-bold">Register</h2>
+
+        {% if message %}
+            <div style="color: red;">{{ message }}</div>
+        {% endif %}
+
+        <form class="needs-validation" action="{% url 'register' %}" method="post" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                <input class="form-control" autofocus type="text" name="username" placeholder="Username" required>
+                <div class="invalid-feedback">
+                    Please choose a username.
+                </div>
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="email" name="email" placeholder="Email Address" required>
+                <div class="invalid-feedback">
+                    Please choose a email.
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
+                    <div class="input-group-prepend">
+                        <button type="button" onclick="toggleVisibilityPassword('password', 'buttonVisibility')" class="input-group-text">
+                        <i id="buttonVisibility" class="text-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                            </svg>
+                        </i>
+                        </button>
+                    </div>
+                    <div class="invalid-feedback">
+                        Please choose a password.
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="password" name="confirmation" class="form-control" id="confirmation" placeholder="Confirm password" required>
+                    <div class="input-group-prepend">
+                        <button type="button" onclick="toggleVisibilityPassword('confirmation', 'buttonVisibility2')" class="input-group-text">                        
+                        <i id="buttonVisibility2" class="text-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                            </svg>
+                        </i>
+                        </button>
+                    </div>
+                    <div class="invalid-feedback">
+                        Please choose a password.
+                    </div>
+                </div>
+            </div>
+            <p class="message">Already have an account? <a href="{% url 'login' %}" class="text-blue-500">Log In here.</a></p>
+            <div class="text-right mt-2">
+                <input class="btn bg-blue-500 font-medium text-white" type="submit" value="Register">
+            </div>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

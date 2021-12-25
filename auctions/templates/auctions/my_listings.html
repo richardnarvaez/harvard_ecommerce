@@ -1,0 +1,28 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+{% block body %}
+
+<div>
+    {% if user %}
+    <img class="h-20 w-20 rounded-full mx-auto mb-3 object-cover" src="https://saint313.com/wp-content/uploads/2018/04/pexels-photo-428341-1024x683.jpeg" alt="Profile">
+    <h4 class="details-name font-medium text-center">{{user|title}}</h4>
+    <h4 class="details-name font-medium text-center ">{{user.email}}</h4>
+    <a class="mb-4 mx-auto px-4 py-2 text-center w-full text-red-700 inline-block" href="{% url 'logout' %}">Log Out</a>
+    {% endif %} 
+
+    {% if auctions %}
+    <div class="container-fluid max-w-3xl mx-auto mb-36">
+        <div class="row grid grid-cols-1 md:grid-cols-3 gap-3">
+            {% for auction in auctions %}
+               {% include "auctions/_item_auction.html" %}
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+        <div class="empty">
+            <p>You don't have any listings.</p>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
